@@ -26,7 +26,6 @@ st.markdown("""
     }
     @keyframes glow { 0%, 100% { text-shadow: 0 0 10px #fff, 0 0 20px #ffb7c5; } 50% { text-shadow: 0 0 40px #ffb7c5, 0 0 60px #ff8aab; } }
 
-    /* Font Berangkai Khusus untuk Butang */
     .btn-berangkai {
         font-family: 'Great Vibes', cursive !important;
         font-size: 35px !important;
@@ -57,7 +56,7 @@ st.markdown('<p style="text-align:center; font-size:28px; font-weight:bold; colo
 # 2. Sambungan ke Google Sheet
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-# 3. Kotak Hantar Ucapan dengan Butang Berangkai (Write Here)
+# 3. Kotak Hantar Ucapan
 st.markdown(f"""
     <div style="background-color: rgba(255, 255, 255, 0.4); border-radius: 30px; padding: 40px; text-align: center; border: 2px solid white; position: relative; z-index: 5;">
         <h2 style="color: #4A4A4A; font-family: sans-serif;">🌷 Titipkan Ucapan 🌷</h2>
@@ -73,7 +72,7 @@ st.markdown(f"""
 
 st.write("---")
 
-# 4. Paparan Ucapan Live (Tanpa Tajuk Dinding Memori)
+# 4. Paparan Ucapan Live
 try:
     df = conn.read(ttl=0) 
     if not df.empty:
@@ -88,6 +87,6 @@ try:
 except Exception as e:
     st.error("Gagal menarik data. Pastikan link Google Sheet di secrets.toml adalah PUBLIC.")
 
-# Auto-refresh setiap 30 saat
-time.sleep(30)
+# --- TUKAR KEMBALI KE 10 SAAT ---
+time.sleep(10)
 st.rerun()
