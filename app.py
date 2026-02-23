@@ -3,10 +3,10 @@ from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 import time
 
-# 1. Setting Halaman
+# 1. Konfigurasi Halaman
 st.set_page_config(page_title="Selaut Budi Seribu Memori", page_icon="🌸", layout="centered")
 
-# 2. CSS: Sakura, Tajuk Gergasi, & Transparent Boxes
+# 2. CSS: Tajuk Gergasi, Sakura, & Box Transparent
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
@@ -14,17 +14,21 @@ st.markdown("""
     /* Background Utama */
     .stApp {
         background: linear-gradient(135deg, #FFEBEE 0%, #E3F2FD 33%, #E8F5E9 66%, #F3E5F5 100%);
+        overflow-x: hidden;
     }
 
-    /* Tajuk Berangkai GERGASI & Glowing */
-    .tajuk-utama {
+    /* TAJUK GERGASI - Jauh lebih besar dari sub-tajuk */
+    .tajuk-gergasi {
         font-family: 'Great Vibes', cursive;
         color: #4A4A4A;
         text-align: center;
-        font-size: 120px; /* Saiz paling besar */
-        line-height: 1.2;
+        font-size: 130px !important; /* Saiz Gergasi */
+        line-height: 1.1;
+        margin-top: 20px;
         margin-bottom: 0px;
         animation: glow 3s ease-in-out infinite;
+        z-index: 10;
+        position: relative;
     }
 
     @keyframes glow {
@@ -36,42 +40,53 @@ st.markdown("""
         text-align: center;
         color: #6D6D6D;
         font-size: 25px;
-        margin-top: -20px;
+        margin-top: -10px;
         font-style: italic;
+        position: relative;
+        z-index: 10;
     }
 
-    /* BUANG BOX HITAM - Buat jadi Transparent */
+    /* BOX TRANSPARENT - Buang warna kelabu/hitam */
     div[data-testid="stForm"], .card-ucapan {
-        background-color: rgba(255, 255, 255, 0.2) !important; /* Lutsinar habis */
+        background-color: rgba(255, 255, 255, 0.3) !important; /* Lutsinar */
         border-radius: 30px;
-        padding: 30px;
-        border: 2px solid rgba(255, 255, 255, 0.5) !important;
+        padding: 40px;
+        border: 2px solid rgba(255, 255, 255, 0.6) !important;
         box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         margin-bottom: 25px;
     }
 
-    /* Buat kotak input pun jadi cerah/lutsinar */
+    /* Kotak Input Lutsinar (Bukan Kelabu) */
     .stTextInput>div>div>input, .stTextArea>div>div>textarea {
-        background-color: rgba(255, 255, 255, 0.6) !important;
+        background-color: rgba(255, 255, 255, 0.7) !important;
         color: #4A4A4A !important;
-        border: none !important;
+        border: 1px solid #FFB7C5 !important;
+        font-size: 18px !important;
     }
 
-    /* Tulisan Label Pink Terang */
+    /* Label Pink Terang */
     .stTextInput label, .stTextArea label {
         color: #FF1493 !important;
-        font-size: 18px !important;
+        font-size: 20px !important;
         font-weight: bold !important;
     }
 
-    /* Animasi Sakura Jatuh */
-    .sakura {
+    /* ANIMASI SAKURA - Dipaksa ke depan */
+    .sakura-container {
         position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 9999;
+    }
+
+    .sakura {
+        position: absolute;
         background-color: #ffb7c5;
         border-radius: 100% 0 100% 0;
         opacity: 0.8;
-        pointer-events: none;
-        z-index: 9999; /* Biar dia duduk paling depan */
         animation: fall linear infinite;
     }
 
@@ -80,40 +95,47 @@ st.markdown("""
         100% { transform: translateY(110vh) rotate(360deg); }
     }
 
-    /* Butang Hantar Purple */
+    /* Butang Hantar */
     .stButton>button {
         background-color: #D1C4E9 !important;
         color: #4A4A4A !important;
         border-radius: 20px !important;
-        border: none !important;
-        padding: 10px 20px !important;
         font-weight: bold !important;
+        border: none !important;
+        padding: 15px 30px !important;
     }
     </style>
+
+    <div class="sakura-container" id="sakura-box"></div>
     
     <script>
     function createSakura() {
+        const container = document.getElementById('sakura-box');
+        if (!container) return;
         const sakura = document.createElement('div');
         sakura.classList.add('sakura');
         sakura.style.left = Math.random() * 100 + 'vw';
         sakura.style.width = Math.random() * 15 + 10 + 'px';
         sakura.style.height = sakura.style.width;
-        sakura.style.animationDuration = Math.random() * 5 + 8 + 's';
-        document.body.appendChild(sakura);
-        setTimeout(() => { sakura.remove(); }, 12000);
+        sakura.style.animationDuration = Math.random() * 4 + 7 + 's';
+        container.appendChild(sakura);
+        setTimeout(() => { sakura.remove(); }, 11000);
     }
-    setInterval(createSakura, 300);
+    setInterval(createSakura, 400);
     </script>
     """, unsafe_allow_html=True)
 
-# 3. Paparan Tajuk
-st.markdown('<p class="tajuk-utama">Selaut Budi Seribu Memori</p>', unsafe_allow_html=True)
+# 3. Header Utama
+st.markdown('<p class="tajuk-gergasi">Selaut Budi Seribu Memori</p>', unsafe_allow_html=True)
 st.markdown('<p class="sub-tajuk">Laman Kenangan Persaraan Cikgu</p>', unsafe_allow_html=True)
 
 st.write("")
 
-# 4. Sambungan GSheets
-conn = st.connection("gsheets", type=GSheetsConnection)
+# 4. Sambungan GSheets (Pastikan Link dlm Secrets adalah EDITOR & PUBLIC)
+try:
+    conn = st.connection("gsheets", type=GSheetsConnection)
+except:
+    st.error("Gagal menyambung ke Google Sheets. Sila semak link di secrets.toml.")
 
 # 5. Borang
 with st.form("borang_utama", clear_on_submit=True):
@@ -127,7 +149,7 @@ if submit:
     if nama_input and sekolah_input and ucapan_input:
         try:
             df = conn.read()
-            # Gunakan NAMA, SEKOLAH, UCAPAN ikut gambar Sheets Bubu
+            # Gunakan NAMA, SEKOLAH, UCAPAN ikut Google Sheets Bubu
             new_row = pd.DataFrame([{"NAMA": nama_input, "SEKOLAH": sekolah_input, "UCAPAN": ucapan_input}])
             updated_df = pd.concat([df, new_row], ignore_index=True)
             conn.update(data=updated_df)
@@ -137,13 +159,13 @@ if submit:
             time.sleep(2)
             st.rerun()
         except Exception as e:
-            st.error(f"Error: {e}")
+            st.error(f"Error Simpan Data: {e}. Pastikan Google Sheets Bubu 'Anyone with link can Edit'.")
     else:
         st.warning("Mohon isi semua maklumat ya Bubu.")
 
 st.write("---")
 
-# 6. Dinding Live
+# 6. Dinding Memori
 st.markdown("<h3 style='text-align: center; color: #FF1493;'>✨ Dinding Memori Live ✨</h3>", unsafe_allow_html=True)
 
 try:
@@ -152,9 +174,9 @@ try:
         for index, row in data_live.iloc[::-1].iterrows():
             st.markdown(f"""
                 <div class="card-ucapan">
-                    <strong style="font-size: 20px; color: #FF1493;">{row['NAMA']}</strong><br>
+                    <strong style="font-size: 22px; color: #FF1493;">{row['NAMA']}</strong><br>
                     <small style="color: #4A4A4A;">{row['SEKOLAH']}</small>
-                    <p style="margin-top: 10px; color: #4A4A4A; font-style: italic; font-size: 18px;">"{row['UCAPAN']}"</p>
+                    <p style="margin-top: 10px; color: #4A4A4A; font-style: italic; font-size: 20px;">"{row['UCAPAN']}"</p>
                 </div>
             """, unsafe_allow_html=True)
 except:
