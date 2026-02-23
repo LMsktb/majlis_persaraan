@@ -3,20 +3,18 @@ from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 import time
 
-# 1. Konfigurasi Halaman & CSS (Sakura & Tajuk Gergasi)
+# 1. Konfigurasi Halaman & CSS
 st.set_page_config(page_title="Laman Kenangan Cikgu Nordin", page_icon="🌸", layout="centered")
 
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
     
-    /* Latar Belakang Pastel */
     .stApp { 
         background: linear-gradient(135deg, #FFEBEE 0%, #E3F2FD 33%, #E8F5E9 66%, #F3E5F5 100%); 
         overflow-x: hidden; 
     }
     
-    /* Tajuk Gergasi & Berkelip */
     .tajuk-gergasi {
         font-family: 'Great Vibes', cursive;
         color: #4A4A4A;
@@ -28,7 +26,13 @@ st.markdown("""
     }
     @keyframes glow { 0%, 100% { text-shadow: 0 0 10px #fff, 0 0 20px #ffb7c5; } 50% { text-shadow: 0 0 40px #ffb7c5, 0 0 60px #ff8aab; } }
 
-    /* Animasi Sakura Pure CSS */
+    /* Font Berangkai Khusus untuk Butang */
+    .btn-berangkai {
+        font-family: 'Great Vibes', cursive !important;
+        font-size: 35px !important;
+        font-weight: normal !important;
+    }
+
     .sakura { 
         position: fixed; 
         top: -10%; 
@@ -50,18 +54,18 @@ st.markdown("""
 st.markdown('<p class="tajuk-gergasi">Selaut Budi Seribu Memori</p>', unsafe_allow_html=True)
 st.markdown('<p style="text-align:center; font-size:28px; font-weight:bold; color:#FF1493;">Laman Kenangan Persaraan Cikgu Nordin Bin Yasir</p>', unsafe_allow_html=True)
 
-# 2. Sambungan ke Google Sheet (Read-Only)
+# 2. Sambungan ke Google Sheet
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-# 3. Kotak Hantar Ucapan (Link Form Moon)
+# 3. Kotak Hantar Ucapan dengan Butang Berangkai (Write Here)
 st.markdown(f"""
     <div style="background-color: rgba(255, 255, 255, 0.4); border-radius: 30px; padding: 40px; text-align: center; border: 2px solid white; position: relative; z-index: 5;">
         <h2 style="color: #4A4A4A; font-family: sans-serif;">🌷 Titipkan Ucapan 🌷</h2>
         <p style="color: #4A4A4A; font-size: 18px;">Klik butang di bawah untuk menghantar ucapan & kehadiran:</p>
         <br>
         <a href="https://forms.gle/A9A6GyfFFTM1gPb29" target="_blank">
-            <button style="background-color: #D1C4E9; color: #4A4A4A; padding: 20px 40px; border-radius: 20px; border: none; font-weight: bold; font-size: 22px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                ISI BORANG UCAPAN ✍️
+            <button class="btn-berangkai" style="background-color: #D1C4E9; color: #4A4A4A; padding: 10px 50px; border-radius: 20px; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                (Write Here)
             </button>
         </a>
     </div>
@@ -69,9 +73,7 @@ st.markdown(f"""
 
 st.write("---")
 
-# 4. Dinding Ucapan Live
-st.markdown("<h3 style='text-align: center; color: #FF1493;'>✨ Dinding Memori Live ✨</h3>", unsafe_allow_html=True)
-
+# 4. Paparan Ucapan Live (Tanpa Tajuk Dinding Memori)
 try:
     df = conn.read(ttl=0) 
     if not df.empty:
@@ -86,6 +88,6 @@ try:
 except Exception as e:
     st.error("Gagal menarik data. Pastikan link Google Sheet di secrets.toml adalah PUBLIC.")
 
-# Auto-refresh setiap 30 saat (dikurangkan supaya loading tidak kerap muncul)
+# Auto-refresh setiap 30 saat
 time.sleep(30)
 st.rerun()
