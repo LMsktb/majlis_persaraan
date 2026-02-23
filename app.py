@@ -3,19 +3,20 @@ from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 import time
 
-# 1. Konfigurasi Halaman
+# 1. Konfigurasi Halaman & CSS (Sakura & Tajuk Gergasi)
 st.set_page_config(page_title="Selaut Budi Seribu Memori", page_icon="🌸", layout="centered")
 
-# 2. CSS: Sakura, Tajuk Gergasi, & Box Transparent
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
-
-    .stApp {
-        background: linear-gradient(135deg, #FFEBEE 0%, #E3F2FD 33%, #E8F5E9 66%, #F3E5F5 100%);
-        overflow-x: hidden;
+    
+    /* Latar Belakang Pastel */
+    .stApp { 
+        background: linear-gradient(135deg, #FFEBEE 0%, #E3F2FD 33%, #E8F5E9 66%, #F3E5F5 100%); 
+        overflow-x: hidden; 
     }
-
+    
+    /* Tajuk Gergasi & Berkelip */
     .tajuk-gergasi {
         font-family: 'Great Vibes', cursive;
         color: #4A4A4A;
@@ -23,119 +24,73 @@ st.markdown("""
         font-size: 130px !important;
         line-height: 1.1;
         margin-top: 50px;
-        margin-bottom: 10px;
         animation: glow 3s ease-in-out infinite;
-        position: relative;
-        z-index: 10;
     }
+    @keyframes glow { 0%, 100% { text-shadow: 0 0 10px #fff, 0 0 20px #ffb7c5; } 50% { text-shadow: 0 0 40px #ffb7c5, 0 0 60px #ff8aab; } }
 
-    @keyframes glow {
-        0%, 100% { text-shadow: 0 0 10px #fff, 0 0 20px #ffb7c5; }
-        50% { text-shadow: 0 0 40px #ffb7c5, 0 0 60px #ff8aab; }
+    /* Animasi Sakura Pure CSS */
+    .sakura { 
+        position: fixed; 
+        top: -10%; 
+        background-color: #ffb7c5; 
+        border-radius: 100% 0 100% 0; 
+        z-index: 999; 
+        pointer-events: none; 
+        animation: fall linear infinite; 
     }
-
-    div[data-testid="stForm"], .card-ucapan {
-        background-color: rgba(255, 255, 255, 0.4) !important;
-        border-radius: 30px;
-        padding: 40px;
-        border: 2px solid rgba(255, 255, 255, 0.7) !important;
-        margin-bottom: 25px;
-        position: relative;
-        z-index: 5;
-    }
-
-    .stTextInput label, .stTextArea label {
-        color: #FF1493 !important;
-        font-size: 20px !important;
-        font-weight: bold !important;
-    }
-
-    /* Sakura CSS Animation */
-    .sakura {
-        position: fixed;
-        top: -10%;
-        background-color: #ffb7c5;
-        border-radius: 100% 0 100% 0;
-        z-index: 999;
-        pointer-events: none;
-        animation: fall linear infinite;
-    }
-    @keyframes fall {
-        0% { transform: translateY(0vh) rotate(0deg); }
-        100% { transform: translateY(110vh) rotate(360deg); }
-    }
+    @keyframes fall { 0% { transform: translateY(0vh) rotate(0deg); } 100% { transform: translateY(110vh) rotate(360deg); } }
     .s1 { left: 10%; width: 15px; height: 15px; animation-duration: 7s; }
-    .s2 { left: 30%; width: 10px; height: 10px; animation-duration: 10s; }
-    .s3 { left: 50%; width: 20px; height: 20px; animation-duration: 8s; }
-    .s4 { left: 70%; width: 12px; height: 12px; animation-duration: 12s; }
-    .s5 { left: 90%; width: 18px; height: 18px; animation-duration: 9s; }
+    .s2 { left: 45%; width: 12px; height: 12px; animation-duration: 9s; }
+    .s3 { left: 85%; width: 18px; height: 18px; animation-duration: 11s; }
     </style>
-
-    <div class="sakura s1"></div>
-    <div class="sakura s2"></div>
-    <div class="sakura s3"></div>
-    <div class="sakura s4"></div>
-    <div class="sakura s5"></div>
+    <div class="sakura s1"></div><div class="sakura s2"></div><div class="sakura s3"></div>
     """, unsafe_allow_html=True)
 
 st.markdown('<p class="tajuk-gergasi">Selaut Budi Seribu Memori</p>', unsafe_allow_html=True)
+st.markdown('<p style="text-align:center; font-size:25px; font-style:italic; color:#6D6D6D;">Laman Kenangan Persaraan Cikgu</p>', unsafe_allow_html=True)
 
-# 3. Sambungan GSheets
+# 2. Sambungan ke Google Sheet (Read-Only)
+# Pastikan secrets.toml ada link Google Sheet yang betul
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-# 4. Borang
-with st.form("borang_utama", clear_on_submit=True):
-    st.markdown("<h2 style='text-align: center; color: #FF1493;'>🌷 Titipkan Ucapan</h2>", unsafe_allow_html=True)
-    nama = st.text_input("NAMA PENUH")
-    sekolah = st.text_input("SEKOLAH / UNIT")
-    ucapan = st.text_area("UCAPAN & DOA")
-    submit = st.form_submit_button("Hantar Kehadiran & Ucapan 🌸")
+# 3. Kotak Hantar Ucapan (Guna Link Form Moon)
+st.markdown(f"""
+    <div style="background-color: rgba(255, 255, 255, 0.4); border-radius: 30px; padding: 40px; text-align: center; border: 2px solid white; position: relative; z-index: 5;">
+        <h2 style="color: #FF1493; font-family: sans-serif;">🌷 Titipkan Ucapan 🌷</h2>
+        <p style="color: #4A4A4A; font-size: 18px;">Klik butang di bawah untuk menghantar ucapan & kehadiran:</p>
+        <br>
+        <a href="https://forms.gle/A9A6GyfFFTM1gPb29" target="_blank">
+            <button style="background-color: #D1C4E9; color: #4A4A4A; padding: 20px 40px; border-radius: 20px; border: none; font-weight: bold; font-size: 22px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                ISI BORANG UCAPAN ✍️
+            </button>
+        </a>
+    </div>
+    """, unsafe_allow_html=True)
 
-if submit:
-    if nama and sekolah and ucapan:
-        try:
-            # 1. Baca data sedia ada
-            df = conn.read()
-            
-            # 2. Sediakan baris baru (Sesuai dengan NAMA, SEKOLAH, UCAPAN dalam Sheets Bubu)
-            new_row = pd.DataFrame([{"NAMA": nama, "SEKOLAH": sekolah, "UCAPAN": ucapan}])
-            
-            # 3. Cantumkan data lama dan baru
-            updated_df = pd.concat([df, new_row], ignore_index=True)
-            
-            # 4. Paksa simpan (Update)
-            conn.update(data=updated_df)
-            
-            # 5. Clear Cache supaya data baru terus muncul
-            st.cache_data.clear()
-            
-            st.balloons()
-            st.success(f"Terima kasih {nama}! Ucapan berjaya disimpan.")
-            time.sleep(2)
-            st.rerun()
-        except Exception as e:
-            st.error(f"Gagal simpan! Pastikan Google Sheets 'Anyone with link can Edit'. Ralat: {e}")
-    else:
-        st.warning("Bubu, kena isi semua kotak dulu baru boleh hantar!")
-
-# 5. Dinding Live
 st.write("---")
+
+# 4. Dinding Ucapan Live (Tarik Data dari Sheet)
 st.markdown("<h3 style='text-align: center; color: #FF1493;'>✨ Dinding Memori Live ✨</h3>", unsafe_allow_html=True)
 
 try:
-    data_live = conn.read()
-    if not data_live.empty:
-        for index, row in data_live.iloc[::-1].iterrows():
+    # ttl=0 supaya dia tarik data paling baru setiap kali refresh
+    df = conn.read(ttl=0) 
+    if not df.empty:
+        # Susun ikut yang terbaru (paling bawah di Sheet akan jadi paling atas di Web)
+        for index, row in df.iloc[::-1].iterrows():
+            # row.iloc[1], [2], [3] merujuk kepada kolum Nama, Sekolah, Ucapan
             st.markdown(f"""
-                <div class="card-ucapan">
-                    <strong style="font-size: 22px; color: #FF1493;">{row['NAMA']}</strong><br>
-                    <small style="color: #4A4A4A;">{row['SEKOLAH']}</small>
-                    <p style="margin-top: 10px; color: #4A4A4A; font-style: italic; font-size: 20px;">"{row['UCAPAN']}"</p>
+                <div style="background-color: rgba(255, 255, 255, 0.4); border-radius: 25px; padding: 25px; margin-bottom: 15px; border: 1px solid white; position: relative; z-index: 5;">
+                    <strong style="font-size: 22px; color: #FF1493;">{row.iloc[1]}</strong><br>
+                    <small style="color: #4A4A4A;">{row.iloc[2]}</small>
+                    <p style="margin-top: 10px; color: #4A4A4A; font-style: italic; font-size: 20px;">"{row.iloc[3]}"</p>
                 </div>
             """, unsafe_allow_html=True)
-except:
-    st.info("Menunggu ucapan pertama...")
+    else:
+        st.info("Menunggu ucapan pertama masuk dari Google Form...")
+except Exception as e:
+    st.error("Gagal menarik data. Pastikan link Google Sheet di secrets.toml adalah PUBLIC (Anyone with link can view).")
 
-# Auto-refresh
-time.sleep(30)
+# Auto-refresh skrin setiap 10 saat
+time.sleep(10)
 st.rerun()
