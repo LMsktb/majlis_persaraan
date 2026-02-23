@@ -21,12 +21,11 @@ st.markdown("""
         text-align: center;
         font-size: 110px !important;
         line-height: 1.1;
-        margin-top: 50px;
+        margin-top: 30px;
         animation: glow 3s ease-in-out infinite;
     }
     @keyframes glow { 0%, 100% { text-shadow: 0 0 10px #fff, 0 0 20px #ffb7c5; } 50% { text-shadow: 0 0 40px #ffb7c5, 0 0 60px #ff8aab; } }
 
-    /* Styling Butang Yang Seragam & Panjang */
     .btn-container {
         display: flex;
         flex-direction: column;
@@ -55,7 +54,6 @@ st.markdown("""
         font-size: 35px !important;
     }
 
-    /* Sakura Animation */
     .sakura { 
         position: fixed; 
         top: -10%; 
@@ -70,24 +68,30 @@ st.markdown("""
     .s2 { left: 45%; width: 12px; height: 12px; animation-duration: 9s; }
     .s3 { left: 85%; width: 18px; height: 18px; animation-duration: 11s; }
     
-    .stExpander {
-        border: none !important;
-        background: transparent !important;
-    }
+    .stExpander { border: none !important; background: transparent !important; }
     </style>
     <div class="sakura s1"></div><div class="sakura s2"></div><div class="sakura s3"></div>
     """, unsafe_allow_html=True)
 
-# Tajuk Besar
+# 2. Header
 st.markdown('<p class="tajuk-gergasi">Selaut Budi Seribu Memori</p>', unsafe_allow_html=True)
-st.markdown('<p style="text-align:center; font-size:28px; font-weight:bold; color:#FF1493;">Laman Kenangan Persaraan Cikgu Nordin Bin Yasir</p>', unsafe_allow_html=True)
+st.markdown('<p style="text-align:center; font-size:28px; font-weight:bold; color:#FF1493; margin-top:-20px;">Laman Kenangan Persaraan Cikgu Nordin Bin Yasir</p>', unsafe_allow_html=True)
 
-# 2. Sambungan ke Google Sheet
+# 3. Paparan Gambar Transparent Cikgu Nordin
+try:
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        # Pastikan fail di GitHub bernama cikgu_nordin.png
+        st.image("cikgu_nordin.png", use_container_width=True)
+except:
+    st.write("") # Ruang ini kosong jika gambar belum dimuat naik
+
+# 4. Sambungan Data
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-# 3. Ayat Arahan & Susunan Butang
+# 5. Ayat Arahan & Butang
 st.markdown('<div class="btn-container">', unsafe_allow_html=True)
-st.markdown('<p style="color: #FF1493; font-size: 20px; font-weight: bold; text-align: center; margin-bottom: -5px;">( KLIK BUTANG KEHADIRAN DI BAWAH )</p>', unsafe_allow_html=True)
+st.markdown('<p style="color: #FF1493; font-size: 20px; font-weight: bold; text-align: center;">( KLIK BUTANG KEHADIRAN DI BAWAH )</p>', unsafe_allow_html=True)
 
 # Butang Atas: Titip Ucapan
 st.markdown(f"""
@@ -107,7 +111,6 @@ with st.container():
                 df = conn.read(ttl=0)
                 if not df.empty:
                     for index, row in df.iloc[::-1].iterrows():
-                        # Saiz box ucapan dikecilkan sikit (Compact)
                         st.markdown(f"""
                             <div style="background-color: #FCE4EC; border-radius: 15px; padding: 12px 18px; margin-bottom: 10px; border: 1px solid #F8BBD0;">
                                 <strong style="font-size: 18px; color: #D81B60;">{row.iloc[1]}</strong>
