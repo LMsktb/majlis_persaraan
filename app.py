@@ -32,7 +32,7 @@ st.markdown("""
         flex-direction: column;
         align-items: center;
         gap: 15px;
-        margin-top: 30px;
+        margin-top: 20px;
     }
 
     .custom-btn {
@@ -42,8 +42,8 @@ st.markdown("""
         border-radius: 20px;
         text-align: center;
         text-decoration: none;
-        width: 100%; /* Buat panjang ikut container */
-        max-width: 500px; /* Hadkan lebar maksimum supaya tak terlalu lebar di skrin besar */
+        width: 100%;
+        max-width: 500px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         border: 2px solid white;
         cursor: pointer;
@@ -70,7 +70,6 @@ st.markdown("""
     .s2 { left: 45%; width: 12px; height: 12px; animation-duration: 9s; }
     .s3 { left: 85%; width: 18px; height: 18px; animation-duration: 11s; }
     
-    /* Hilangkan border asal expander */
     .stExpander {
         border: none !important;
         background: transparent !important;
@@ -86,8 +85,9 @@ st.markdown('<p style="text-align:center; font-size:28px; font-weight:bold; colo
 # 2. Sambungan ke Google Sheet
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-# 3. Susunan Butang Atas Bawah
+# 3. Ayat Arahan & Susunan Butang
 st.markdown('<div class="btn-container">', unsafe_allow_html=True)
+st.markdown('<p style="color: #FF1493; font-size: 20px; font-weight: bold; text-align: center; margin-bottom: -5px;">( KLIK BUTANG KEHADIRAN DI BAWAH )</p>', unsafe_allow_html=True)
 
 # Butang Atas: Titip Ucapan
 st.markdown(f"""
@@ -98,23 +98,21 @@ st.markdown(f"""
     </a>
     """, unsafe_allow_html=True)
 
-# Butang Bawah: Papar Ucapan (Guna Expander dengan gaya seragam)
-# Kita letak expander dalam container yang sama lebarnya
+# Butang Bawah: Papar Ucapan
 with st.container():
-    col1, col2, col3 = st.columns([1, 4, 1]) # Gunakan column untuk letak expander di tengah
+    col1, col2, col3 = st.columns([1, 4, 1]) 
     with col2:
         with st.expander("🌸 Papar Ucapan 🌸"):
             try:
-                # ttl=0 supaya dia tarik data paling baru setiap kali refresh
                 df = conn.read(ttl=0)
                 if not df.empty:
-                    # Susun dari yang terbaru
                     for index, row in df.iloc[::-1].iterrows():
+                        # Saiz box ucapan dikecilkan sikit (Compact)
                         st.markdown(f"""
-                            <div style="background-color: #FCE4EC; border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #F8BBD0;">
-                                <strong style="font-size: 20px; color: #D81B60;">{row.iloc[1]}</strong><br>
-                                <small style="color: #4A4A4A;">{row.iloc[2]}</small>
-                                <p style="margin-top: 10px; color: #4A4A4A; font-style: italic; font-size: 18px;">"{row.iloc[3]}"</p>
+                            <div style="background-color: #FCE4EC; border-radius: 15px; padding: 12px 18px; margin-bottom: 10px; border: 1px solid #F8BBD0;">
+                                <strong style="font-size: 18px; color: #D81B60;">{row.iloc[1]}</strong>
+                                <span style="color: #6D6D6D; font-size: 14px; margin-left: 8px;">({row.iloc[2]})</span>
+                                <p style="margin-top: 5px; color: #4A4A4A; font-style: italic; font-size: 17px; line-height: 1.4;">"{row.iloc[3]}"</p>
                             </div>
                         """, unsafe_allow_html=True)
                 else:
