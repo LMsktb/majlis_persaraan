@@ -26,10 +26,10 @@ st.markdown("""
     }
     @keyframes glow { 0%, 100% { text-shadow: 0 0 10px #fff, 0 0 20px #ffb7c5; } 50% { text-shadow: 0 0 40px #ffb7c5, 0 0 60px #ff8aab; } }
 
-    .btn-berangkai {
+    /* Font Berangkai untuk Butang */
+    .btn-text {
         font-family: 'Great Vibes', cursive !important;
-        font-size: 35px !important;
-        font-weight: normal !important;
+        font-size: 28px !important;
     }
 
     .sakura { 
@@ -45,6 +45,19 @@ st.markdown("""
     .s1 { left: 10%; width: 15px; height: 15px; animation-duration: 7s; }
     .s2 { left: 45%; width: 12px; height: 12px; animation-duration: 9s; }
     .s3 { left: 85%; width: 18px; height: 18px; animation-duration: 11s; }
+    
+    /* Styling Butang */
+    .custom-btn {
+        display: inline-block;
+        background-color: #D1C4E9;
+        color: #4A4A4A;
+        padding: 10px 20px;
+        border-radius: 15px;
+        text-decoration: none;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        margin: 5px;
+        width: 100%;
+    }
     </style>
     <div class="sakura s1"></div><div class="sakura s2"></div><div class="sakura s3"></div>
     """, unsafe_allow_html=True)
@@ -56,37 +69,42 @@ st.markdown('<p style="text-align:center; font-size:28px; font-weight:bold; colo
 # 2. Sambungan ke Google Sheet
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-# 3. Kotak Hantar Ucapan
-st.markdown(f"""
-    <div style="background-color: rgba(255, 255, 255, 0.4); border-radius: 30px; padding: 40px; text-align: center; border: 2px solid white; position: relative; z-index: 5;">
-        <h2 style="color: #4A4A4A; font-family: sans-serif;">🌷 Titipkan Ucapan 🌷</h2>
-        <p style="color: #4A4A4A; font-size: 18px;">Klik butang di bawah untuk menghantar ucapan & kehadiran:</p>
-        <br>
-        <a href="https://forms.gle/A9A6GyfFFTM1gPb29" target="_blank">
-            <button class="btn-berangkai" style="background-color: #D1C4E9; color: #4A4A4A; padding: 10px 50px; border-radius: 20px; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                (Write Here)
-            </button>
+# 3. Layout Butang Bersebelahan
+st.markdown('<br>', unsafe_allow_html=True)
+col1, col2 = st.columns(2)
+
+with col1:
+    # Butang Titip Ucapan (Link ke Google Form)
+    st.markdown(f"""
+        <a href="https://forms.gle/A9A6GyfFFTM1gPb29" target="_blank" style="text-decoration: none;">
+            <div class="custom-btn" style="text-align: center;">
+                <span class="btn-text">Titip Ucapan</span>
+            </div>
         </a>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
-st.write("---")
+with col2:
+    # Butang Papar Ucapan (Menggunakan Expander Streamlit sebagai Dropdown)
+    show_ucapan = st.expander("Papar Ucapan", expanded=False)
 
-# 4. Paparan Ucapan Live
-try:
-    df = conn.read(ttl=0) 
-    if not df.empty:
-        for index, row in df.iloc[::-1].iterrows():
-            st.markdown(f"""
-                <div style="background-color: rgba(255, 255, 255, 0.4); border-radius: 25px; padding: 25px; margin-bottom: 15px; border: 1px solid white; position: relative; z-index: 5;">
-                    <strong style="font-size: 22px; color: #FF1493;">{row.iloc[1]}</strong><br>
-                    <small style="color: #4A4A4A;">{row.iloc[2]}</small>
-                    <p style="margin-top: 10px; color: #4A4A4A; font-style: italic; font-size: 20px;">"{row.iloc[3]}"</p>
-                </div>
-            """, unsafe_allow_html=True)
-except Exception as e:
-    st.error("Gagal menarik data. Pastikan link Google Sheet di secrets.toml adalah PUBLIC.")
+# 4. Logik Papar Ucapan dalam Dropdown
+with show_ucapan:
+    try:
+        df = conn.read(ttl=0)
+        if not df.empty:
+            for index, row in df.iloc[::-1].iterrows():
+                st.markdown(f"""
+                    <div style="background-color: rgba(255, 255, 255, 0.5); border-radius: 15px; padding: 15px; margin-bottom: 10px; border: 1px solid white;">
+                        <strong style="font-size: 18px; color: #FF1493;">{row.iloc[1]}</strong><br>
+                        <small style="color: #4A4A4A;">{row.iloc[2]}</small>
+                        <p style="margin-top: 5px; color: #4A4A4A; font-style: italic; font-size: 16px;">"{row.iloc[3]}"</p>
+                    </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.write("Belum ada ucapan lagi.")
+    except Exception as e:
+        st.error("Gagal menarik data. Semak pautan Google Sheet.")
 
-# --- TUKAR KEMBALI KE 10 SAAT ---
+# Auto-refresh setiap 10 saat
 time.sleep(10)
 st.rerun()
