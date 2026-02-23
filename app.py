@@ -26,12 +26,12 @@ st.markdown("""
     }
     @keyframes glow { 0%, 100% { text-shadow: 0 0 10px #fff, 0 0 20px #ffb7c5; } 50% { text-shadow: 0 0 40px #ffb7c5, 0 0 60px #ff8aab; } }
 
-    /* Styling Butang Yang Seragam */
+    /* Styling Butang Yang Seragam & Panjang */
     .btn-container {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 20px;
+        gap: 15px;
         margin-top: 30px;
     }
 
@@ -42,11 +42,12 @@ st.markdown("""
         border-radius: 20px;
         text-align: center;
         text-decoration: none;
-        width: 300px; /* Saiz tetap supaya seragam */
+        width: 100%; /* Buat panjang ikut container */
+        max-width: 500px; /* Hadkan lebar maksimum supaya tak terlalu lebar di skrin besar */
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         border: 2px solid white;
         cursor: pointer;
-        transition: 0.3s;
+        display: block;
     }
 
     .btn-text {
@@ -69,7 +70,7 @@ st.markdown("""
     .s2 { left: 45%; width: 12px; height: 12px; animation-duration: 9s; }
     .s3 { left: 85%; width: 18px; height: 18px; animation-duration: 11s; }
     
-    /* Buat expander nampak lutsinar & cantik */
+    /* Hilangkan border asal expander */
     .stExpander {
         border: none !important;
         background: transparent !important;
@@ -90,33 +91,38 @@ st.markdown('<div class="btn-container">', unsafe_allow_html=True)
 
 # Butang Atas: Titip Ucapan
 st.markdown(f"""
-    <a href="https://forms.gle/A9A6GyfFFTM1gPb29" target="_blank" style="text-decoration: none;">
+    <a href="https://forms.gle/A9A6GyfFFTM1gPb29" target="_blank" style="text-decoration: none; width: 100%; display: flex; justify-content: center;">
         <div class="custom-btn">
             <span class="btn-text">🌸 Titip Ucapan 🌸</span>
         </div>
     </a>
     """, unsafe_allow_html=True)
 
-st.markdown('</div>', unsafe_allow_html=True)
+# Butang Bawah: Papar Ucapan (Guna Expander dengan gaya seragam)
+# Kita letak expander dalam container yang sama lebarnya
+with st.container():
+    col1, col2, col3 = st.columns([1, 4, 1]) # Gunakan column untuk letak expander di tengah
+    with col2:
+        with st.expander("🌸 Papar Ucapan 🌸"):
+            try:
+                # ttl=0 supaya dia tarik data paling baru setiap kali refresh
+                df = conn.read(ttl=0)
+                if not df.empty:
+                    # Susun dari yang terbaru
+                    for index, row in df.iloc[::-1].iterrows():
+                        st.markdown(f"""
+                            <div style="background-color: #FCE4EC; border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #F8BBD0;">
+                                <strong style="font-size: 20px; color: #D81B60;">{row.iloc[1]}</strong><br>
+                                <small style="color: #4A4A4A;">{row.iloc[2]}</small>
+                                <p style="margin-top: 10px; color: #4A4A4A; font-style: italic; font-size: 18px;">"{row.iloc[3]}"</p>
+                            </div>
+                        """, unsafe_allow_html=True)
+                else:
+                    st.write("Belum ada ucapan lagi.")
+            except Exception as e:
+                st.error("Gagal menarik data.")
 
-# Butang Bawah: Papar Ucapan (Guna Expander tapi custom style)
-st.markdown('<br>', unsafe_allow_html=True)
-with st.expander("🌸 Papar Ucapan 🌸"):
-    try:
-        df = conn.read(ttl=0)
-        if not df.empty:
-            for index, row in df.iloc[::-1].iterrows():
-                st.markdown(f"""
-                    <div style="background-color: rgba(255, 255, 255, 0.4); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid white;">
-                        <strong style="font-size: 20px; color: #FF1493;">{row.iloc[1]}</strong><br>
-                        <small style="color: #4A4A4A;">{row.iloc[2]}</small>
-                        <p style="margin-top: 10px; color: #4A4A4A; font-style: italic; font-size: 18px;">"{row.iloc[3]}"</p>
-                    </div>
-                """, unsafe_allow_html=True)
-        else:
-            st.write("Belum ada ucapan lagi.")
-    except Exception as e:
-        st.error("Gagal menarik data.")
+st.markdown('</div>', unsafe_allow_html=True)
 
 # Auto-refresh setiap 10 saat
 time.sleep(10)
