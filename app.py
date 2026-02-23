@@ -21,7 +21,7 @@ st.markdown("""
         font-family: 'Great Vibes', cursive;
         color: #4A4A4A;
         text-align: center;
-        font-size: 110px !important; /* Disesuaikan sedikit supaya nama panjang muat */
+        font-size: 110px !important;
         line-height: 1.1;
         margin-top: 50px;
         animation: glow 3s ease-in-out infinite;
@@ -46,14 +46,14 @@ st.markdown("""
     <div class="sakura s1"></div><div class="sakura s2"></div><div class="sakura s3"></div>
     """, unsafe_allow_html=True)
 
-# Tajuk Besar yang telah dikemaskini
+# Tajuk Besar
 st.markdown('<p class="tajuk-gergasi">Selaut Budi Seribu Memori</p>', unsafe_allow_html=True)
 st.markdown('<p style="text-align:center; font-size:28px; font-weight:bold; color:#FF1493;">Laman Kenangan Persaraan Cikgu Nordin Bin Yasir</p>', unsafe_allow_html=True)
 
 # 2. Sambungan ke Google Sheet (Read-Only)
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-# 3. Kotak Hantar Ucapan (Menggunakan URL Form yang Moon berikan)
+# 3. Kotak Hantar Ucapan (Link Form Moon)
 st.markdown(f"""
     <div style="background-color: rgba(255, 255, 255, 0.4); border-radius: 30px; padding: 40px; text-align: center; border: 2px solid white; position: relative; z-index: 5;">
         <h2 style="color: #4A4A4A; font-family: sans-serif;">🌷 Titipkan Ucapan 🌷</h2>
@@ -83,11 +83,9 @@ try:
                     <p style="margin-top: 10px; color: #4A4A4A; font-style: italic; font-size: 20px;">"{row.iloc[3]}"</p>
                 </div>
             """, unsafe_allow_html=True)
-    else:
-        st.info("Menunggu ucapan pertama masuk dari Google Form...")
 except Exception as e:
-    st.error("Gagal menarik data. Pastikan link Google Sheet di secrets.toml adalah PUBLIC (Anyone with link can view).")
+    st.error("Gagal menarik data. Pastikan link Google Sheet di secrets.toml adalah PUBLIC.")
 
-# Auto-refresh setiap 10 saat
-time.sleep(10)
+# Auto-refresh setiap 30 saat (dikurangkan supaya loading tidak kerap muncul)
+time.sleep(30)
 st.rerun()
