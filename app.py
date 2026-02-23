@@ -4,7 +4,7 @@ import pandas as pd
 import time
 
 # 1. Konfigurasi Halaman & CSS (Sakura & Tajuk Gergasi)
-st.set_page_config(page_title="Selaut Budi Seribu Memori", page_icon="🌸", layout="centered")
+st.set_page_config(page_title="Laman Kenangan Cikgu Nordin", page_icon="🌸", layout="centered")
 
 st.markdown("""
     <style>
@@ -21,7 +21,7 @@ st.markdown("""
         font-family: 'Great Vibes', cursive;
         color: #4A4A4A;
         text-align: center;
-        font-size: 130px !important;
+        font-size: 110px !important; /* Disesuaikan sedikit supaya nama panjang muat */
         line-height: 1.1;
         margin-top: 50px;
         animation: glow 3s ease-in-out infinite;
@@ -46,17 +46,17 @@ st.markdown("""
     <div class="sakura s1"></div><div class="sakura s2"></div><div class="sakura s3"></div>
     """, unsafe_allow_html=True)
 
+# Tajuk Besar yang telah dikemaskini
 st.markdown('<p class="tajuk-gergasi">Selaut Budi Seribu Memori</p>', unsafe_allow_html=True)
-st.markdown('<p style="text-align:center; font-size:25px; font-style:italic; color:#6D6D6D;">Laman Kenangan Persaraan Cikgu</p>', unsafe_allow_html=True)
+st.markdown('<p style="text-align:center; font-size:28px; font-weight:bold; color:#FF1493;">Laman Kenangan Persaraan Cikgu Nordin Bin Yasir</p>', unsafe_allow_html=True)
 
 # 2. Sambungan ke Google Sheet (Read-Only)
-# Pastikan secrets.toml ada link Google Sheet yang betul
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-# 3. Kotak Hantar Ucapan (Guna Link Form Moon)
+# 3. Kotak Hantar Ucapan (Menggunakan URL Form yang Moon berikan)
 st.markdown(f"""
     <div style="background-color: rgba(255, 255, 255, 0.4); border-radius: 30px; padding: 40px; text-align: center; border: 2px solid white; position: relative; z-index: 5;">
-        <h2 style="color: #FF1493; font-family: sans-serif;">🌷 Titipkan Ucapan 🌷</h2>
+        <h2 style="color: #4A4A4A; font-family: sans-serif;">🌷 Titipkan Ucapan 🌷</h2>
         <p style="color: #4A4A4A; font-size: 18px;">Klik butang di bawah untuk menghantar ucapan & kehadiran:</p>
         <br>
         <a href="https://forms.gle/A9A6GyfFFTM1gPb29" target="_blank">
@@ -69,16 +69,13 @@ st.markdown(f"""
 
 st.write("---")
 
-# 4. Dinding Ucapan Live (Tarik Data dari Sheet)
+# 4. Dinding Ucapan Live
 st.markdown("<h3 style='text-align: center; color: #FF1493;'>✨ Dinding Memori Live ✨</h3>", unsafe_allow_html=True)
 
 try:
-    # ttl=0 supaya dia tarik data paling baru setiap kali refresh
     df = conn.read(ttl=0) 
     if not df.empty:
-        # Susun ikut yang terbaru (paling bawah di Sheet akan jadi paling atas di Web)
         for index, row in df.iloc[::-1].iterrows():
-            # row.iloc[1], [2], [3] merujuk kepada kolum Nama, Sekolah, Ucapan
             st.markdown(f"""
                 <div style="background-color: rgba(255, 255, 255, 0.4); border-radius: 25px; padding: 25px; margin-bottom: 15px; border: 1px solid white; position: relative; z-index: 5;">
                     <strong style="font-size: 22px; color: #FF1493;">{row.iloc[1]}</strong><br>
@@ -91,6 +88,6 @@ try:
 except Exception as e:
     st.error("Gagal menarik data. Pastikan link Google Sheet di secrets.toml adalah PUBLIC (Anyone with link can view).")
 
-# Auto-refresh skrin setiap 10 saat
+# Auto-refresh setiap 10 saat
 time.sleep(10)
 st.rerun()
