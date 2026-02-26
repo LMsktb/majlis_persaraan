@@ -149,7 +149,7 @@ try:
     else:
         st.write("Belum ada ucapan lagi. Jadilah yang pertama!")
 except:
-    st.error("Gagal menarik data dari Google Sheets.")
+    pass
 
 # 5. Auto-refresh
 time.sleep(10)
