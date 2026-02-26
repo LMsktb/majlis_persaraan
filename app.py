@@ -128,32 +128,33 @@ conn = st.connection("gsheets", type=GSheetsConnection)
 
 try:
     df = conn.read(worksheet="Form Responses 1", ttl=0)
-df = df.dropna(subset=["UCAPAN"])
+    df = df.dropna(subset=["UCAPAN"])
 
-if not df.empty:
-    col1, col2, col3 = st.columns(3)
-    cols = [col1, col2, col3]
+    if not df.empty:
+        col1, col2, col3 = st.columns(3)
+        cols = [col1, col2, col3]
 
-    for index, row in df.iloc[::-1].iterrows():
-        with cols[index % 3]:
-            st.markdown(f"""
-                <div class="box-ucapan">
-                    <strong style="font-size: 22px; color: #D81B60;">
-                        {row['NAMA']}
-                    </strong><br>
-                    <small style="color: #880E4F; font-size: 15px;">
-                        {row['SEKOLAH / UNIT']}
-                    </small>
-                    <hr style="margin: 12px 0; border: 0.5px solid #F8BBD0;">
-                    <p style="color: #4A4A4A; font-style: italic; font-size: 19px; line-height: 1.6;">
-                        "{row['UCAPAN']}"
-                    </p>
-                </div>
-            """, unsafe_allow_html=True)
+        for index, row in df.iloc[::-1].iterrows():
+            with cols[index % 3]:
+                st.markdown(f"""
+                    <div class="box-ucapan">
+                        <strong style="font-size: 22px; color: #D81B60;">
+                            {row['NAMA']}
+                        </strong><br>
+                        <small style="color: #880E4F; font-size: 15px;">
+                            {row['SEKOLAH / UNIT']}
+                        </small>
+                        <hr style="margin: 12px 0; border: 0.5px solid #F8BBD0;">
+                        <p style="color: #4A4A4A; font-style: italic; font-size: 19px;">
+                            "{row['UCAPAN']}"
+                        </p>
+                    </div>
+                """, unsafe_allow_html=True)
     else:
-        st.write("Belum ada ucapan lagi. Jadilah yang pertama!")
-except:
-    pass
+        st.write("Belum ada ucapan lagi.")
+
+except Exception as e:
+    st.write("Debug:", e)   # sementara untuk tengok error sebenar
 
 # 5. Auto-refresh
 time.sleep(10)
